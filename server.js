@@ -1,59 +1,76 @@
-require('dotenv').config();
+require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
-const Card = require("./models/Card");
 
 const app = express();
-
-app.use(cors());
 app.use(express.json());
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log("MongoDB Connected"))
-.catch(err => console.log(err));
-
-
-// Root Route (Required for Koyeb Health Check)
+// ================= ENGAGING LANDING PAGE =================
 app.get("/", (req, res) => {
-  res.send("Playing Card API Running");
+  res.send(`
+  <html>
+  <head>
+    <title>Card Management REST API</title>
+    <style>
+      body {
+        font-family: Arial;
+        background: #020617;
+        color: white;
+        text-align: center;
+        padding-top: 80px;
+      }
+      .box {
+        background: #1e293b;
+        padding: 30px;
+        border-radius: 12px;
+        width: 60%;
+        margin: auto;
+        box-shadow: 0 0 15px rgba(0,0,0,0.4);
+      }
+      h1 { color: #38bdf8; }
+      .tag { color: #22c55e; }
+      hr { border: 1px solid #334155; }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <h1>🚀 Card Management REST API</h1>
+      <p>A Production-Ready Backend System for Managing Card Data</p>
+      <p class="tag">Live API Deployment Successful ✅</p>
+      <hr>
+      <h3>API Features:</h3>
+      <p>✔ Create Card</p>
+      <p>✔ Fetch Cards</p>
+      <p>✔ Update Card</p>
+      <p>✔ Delete Card</p>
+      <hr>
+      <h3>Tech Stack:</h3>
+      <p>Node.js | Express.js | MongoDB | Mongoose | Railway</p>
+      <hr>
+      <h3>Available Endpoint:</h3>
+      <p>/api/cards</p>
+      <hr>
+      <p>Developed by <strong>Eshaan Sharma</strong></p>
+    </div>
+  </body>
+  </html>
+  `);
 });
 
+// ================= ROUTES =================
+const cardRoutes = require("./models/Card");
+app.use("/api/cards", cardRoutes);
 
-// CREATE Card
-app.post("/cards", async (req, res) => {
-  const newCard = new Card(req.body);
-  const savedCard = await newCard.save();
-  res.json(savedCard);
-});
+// ================= MONGODB CONNECTION =================
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.log(err));
 
-// READ All Cards
-app.get("/cards", async (req, res) => {
-  const cards = await Card.find();
-  res.json(cards);
-});
+// ================= PORT BINDING =================
+const PORT = process.env.PORT || 5000;
 
-// UPDATE Card
-app.put("/cards/:id", async (req, res) => {
-  const updatedCard = await Card.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true }
-  );
-  res.json(updatedCard);
-});
-
-// DELETE Card
-app.delete("/cards/:id", async (req, res) => {
-  await Card.findByIdAndDelete(req.params.id);
-  res.json({ message: "Card Deleted" });
-});
-
-
-// IMPORTANT FOR KOYEB
-const PORT = process.env.PORT;
-
-app.listen(PORT, () => {
-  console.log(`Server running on ${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
 });
