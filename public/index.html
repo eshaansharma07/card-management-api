@@ -6,19 +6,23 @@
 </head>
 <body>
 
-<div class="dashboard">
+<div class="app">
 
-    <div class="navbar">
-        <h2>💳 Card Dashboard</h2>
+    <div class="sidebar">
+        <h2>💳 Cards</h2>
     </div>
 
-    <div class="add-section">
-        <input id="title" placeholder="Enter Card Title">
-        <input id="description" placeholder="Enter Description">
-        <button onclick="addCard()">Add Card</button>
-    </div>
+    <div class="main">
 
-    <div id="cardContainer" class="grid"></div>
+        <div class="topbar">
+            <input id="title" placeholder="Card Title">
+            <input id="description" placeholder="Description">
+            <button onclick="addCard()">Add</button>
+        </div>
+
+        <div id="cardContainer" class="cards"></div>
+
+    </div>
 
 </div>
 
@@ -53,16 +57,13 @@ async function loadCards(){
     let data = await res.json();
 
     let container = document.getElementById("cardContainer");
-
     container.innerHTML="";
 
     data.forEach(card=>{
 
         container.innerHTML+=`
         <div class="card">
-            <div class="card-header">
-                <h3>${card.title}</h3>
-            </div>
+            <h3>${card.title}</h3>
             <p>${card.description}</p>
             <button class="delete" onclick="deleteCard('${card._id}')">Delete</button>
         </div>
