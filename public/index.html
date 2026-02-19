@@ -1,52 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Card Manager</title>
+    <title>Card Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
+<div class="app">
 
-    <h2>Add Card</h2>
+    <div class="header">
+        <h1>Card Management Dashboard</h1>
+    </div>
 
-    <form id="cardForm">
-        <input type="text" id="title" placeholder="Card Title" required><br>
-        <input type="text" id="description" placeholder="Description" required><br>
-        <button type="submit">Add Card</button>
-    </form>
+    <div class="form-section">
+        <input type="text" id="title" placeholder="Card Title">
+        <input type="text" id="description" placeholder="Description">
+        <button onclick="addCard()">Add Card</button>
+    </div>
 
-    <h2>Cards</h2>
-    <ul id="cardList"></ul>
+    <div id="cardContainer" class="cards"></div>
 
 </div>
 
 <script>
 
-document.getElementById("cardForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+async function addCard(){
 
-    await fetch("/addCard", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            title: document.getElementById("title").value,
-            description: document.getElementById("description").value
+    await fetch("/addCard",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+            title:title.value,
+            description:description.value
         })
     });
 
     loadCards();
-});
+}
+
+async function deleteCard(id){
+
+    await fetch("/card/"+id,{
+        method:"DELETE"
+    });
+
+    loadCards();
+}
 
 async function loadCards(){
+
     let res = await fetch("/cards");
     let data = await res.json();
 
-    let list = document.getElementById("cardList");
-    list.innerHTML = "";
+    cardContainer.innerHTML="";
 
     data.forEach(card=>{
-        list.innerHTML += `<li>${card.title} - ${card.description}</li>`;
+
+        cardContainer.innerHTML+=`
+        <div class="card">
+            <h3>${card.title}</h3>
+            <p>${card.description}</p>
+            <button class="delete" onclick="deleteCard('${card._id}')">Delete</button>
+        </div>
+        `;
     });
 }
 
