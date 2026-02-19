@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Card Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <h2>Add Card</h2>
+
+    <form id="cardForm">
+        <input type="text" id="title" placeholder="Card Title" required><br>
+        <input type="text" id="description" placeholder="Description" required><br>
+        <button type="submit">Add Card</button>
+    </form>
+
+    <h2>Cards</h2>
+    <ul id="cardList"></ul>
+
+</div>
+
+<script>
+
+document.getElementById("cardForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    await fetch("/addCard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            title: document.getElementById("title").value,
+            description: document.getElementById("description").value
+        })
+    });
+
+    loadCards();
+});
+
+async function loadCards(){
+    let res = await fetch("/cards");
+    let data = await res.json();
+
+    let list = document.getElementById("cardList");
+    list.innerHTML = "";
+
+    data.forEach(card=>{
+        list.innerHTML += `<li>${card.title} - ${card.description}</li>`;
+    });
+}
+
+loadCards();
+
+</script>
+
+</body>
+</html>
