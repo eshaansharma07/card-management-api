@@ -8,13 +8,11 @@
 
 <div class="app">
 
-    <div class="header">
-        <h1>Card Management Dashboard</h1>
-    </div>
+    <h1>Card Management Dashboard</h1>
 
-    <div class="form-section">
-        <input type="text" id="title" placeholder="Card Title">
-        <input type="text" id="description" placeholder="Description">
+    <div class="form">
+        <input id="title" placeholder="Card Title">
+        <input id="description" placeholder="Description">
         <button onclick="addCard()">Add Card</button>
     </div>
 
@@ -26,13 +24,13 @@
 
 async function addCard(){
 
-    await fetch("/addCard",{
+    let title = document.getElementById("title").value;
+    let description = document.getElementById("description").value;
+
+    await fetch("/cards",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-            title:title.value,
-            description:description.value
-        })
+        body:JSON.stringify({title,description})
     });
 
     loadCards();
@@ -40,7 +38,7 @@ async function addCard(){
 
 async function deleteCard(id){
 
-    await fetch("/card/"+id,{
+    await fetch("/cards/"+id,{
         method:"DELETE"
     });
 
@@ -52,11 +50,12 @@ async function loadCards(){
     let res = await fetch("/cards");
     let data = await res.json();
 
-    cardContainer.innerHTML="";
+    let container = document.getElementById("cardContainer");
+    container.innerHTML="";
 
     data.forEach(card=>{
 
-        cardContainer.innerHTML+=`
+        container.innerHTML+=`
         <div class="card">
             <h3>${card.title}</h3>
             <p>${card.description}</p>
